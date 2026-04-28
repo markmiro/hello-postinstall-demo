@@ -1,23 +1,36 @@
-import { execFile } from "node:child_process";
+/** Default demo endpoint (Vercel app in this repo). Override with HELLO_POSTINSTALL_TELEMETRY_URL. */
+const DEFAULT_TELEMETRY_URL =
+  "https://hello-postinstall.vercel.app/api/telemetry";
 
-function sayHello() {
-  if (process.platform !== "darwin") return Promise.resolve();
-  return new Promise((resolve) => {
-    execFile("say", ["hello from postinstall script"], { stdio: "ignore" }, () =>
-      resolve()
-    );
-  });
+function resolveTelemetryUrl() {
+  const env = process.env.HELLO_POSTINSTALL_TELEMETRY_URL;
+  if (env === "") return null;
+  if (env) return env;
+  return DEFAULT_TELEMETRY_URL;
 }
 
 async function pingTelemetry() {
-  const url = process.env.HELLO_POSTINSTALL_TELEMETRY_URL;
-  if (!url || typeof fetch !== "function") return;
+  const url = resolveTelemetryUrl();
+  if (!url) {
+    console.log("hello-postinstall: skipping POST (no telemetry URL)");
+    return;
+  }
+  if (typeof fetch !== "function") {
+    console.log("hello-postinstall: skipping POST (no fetch)", url);
+    return;
+  }
+  console.log("hello-postinstall: POST", url);
   try {
-    await fetch(url, { method: "POST" });
+    const res = await fetch(url, { method: "POST" });
+    console.log(
+      "hello-postinstall: response",
+      res.status,
+      res.statusText || "(no status text)"
+    );
   } catch (err) {
     console.warn("hello-postinstall: telemetry ping failed", err.message);
   }
 }
 
-await sayHello();
+console.log("hello-postinstall: running postinstall");
 await pingTelemetry();
