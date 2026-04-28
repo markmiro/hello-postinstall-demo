@@ -16,6 +16,11 @@
     "demo"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markmiro/hello-postinstall-demo.git",
+    "directory": "packages/hello-postinstall"
+  },
   "files": [
     "index.js",
     "scripts/postinstall.js"
