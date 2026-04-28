@@ -4,3 +4,4 @@
 - [ ] Publish repo on GitHub.
 - [ ] Ensure GitHub is linked on npm.
 - [ ] Verify commits.
+- [ ] Add script to root to test install to trigger postinstall.
