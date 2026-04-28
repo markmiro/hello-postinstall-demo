@@ -15,6 +15,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Must match the GitHub Environment name configured under npm package → Trusted publishing.
+    environment: default-publish
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +36,10 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Trusted Publishing (OIDC) requires npm CLI ≥ 11.5.1 (bundled npm on older Node may be too old).
+      - name: Ensure npm supports Trusted Publishing
+        run: npm install -g npm@^11.5.1
+
       - name: Verify import-test against workspace
         run: pnpm test:import
 
@@ -49,5 +55,4 @@ jobs:
           title: "chore: release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
