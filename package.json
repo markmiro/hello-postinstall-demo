@@ -2,6 +2,7 @@
   "name": "hello-postinstall-demo-monorepo",
   "private": true,
   "scripts": {
+    "install:import-test": "pnpm install --filter import-test...",
     "test:import": "pnpm --filter import-test test",
     "changeset": "changeset",
     "version": "changeset version",
