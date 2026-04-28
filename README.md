@@ -1,6 +1,6 @@
 # hello-postinstall-demo
 
-Example npm package with `greet()` and a **`postinstall` hook** that runs macOS `say`.
+Monorepo for **`hello-postinstall`** — a small package with `greet()` and a **`postinstall`** hook that runs macOS `say`.
 
 ## Run the postinstall script
 

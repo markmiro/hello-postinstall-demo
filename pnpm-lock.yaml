@@ -7,3 +7,13 @@ settings:
 importers:
 
   .: {}
+
+  apps/vercel-api: {}
+
+  packages/hello-postinstall: {}
+
+  packages/import-test:
+    dependencies:
+      hello-postinstall:
+        specifier: workspace:*
+        version: link:../hello-postinstall

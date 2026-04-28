@@ -1,0 +1,23 @@
+{
+  "name": "hello-postinstall",
+  "version": "1.0.0",
+  "description": "Example npm package with greet() and a postinstall hook demo",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "keywords": [
+    "hello",
+    "greet",
+    "demo"
+  ],
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "scripts/postinstall.js"
+  ]
+}
