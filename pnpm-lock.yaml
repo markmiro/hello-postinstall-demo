@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  apps/vercel-api: {}
+  apps/hello-postinstall: {}
 
   packages/hello-postinstall: {}
 
