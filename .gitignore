@@ -1,3 +1,26 @@
+# Dependencies
 node_modules/
+
+# Logs
+logs
+*.log
 npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment (keep .env.example committed if you use one)
+.env
+.env.local
+.env.*.local
+
+# OS
 .DS_Store
+
+# Coverage & tooling
+coverage/
+.nyc_output/
+
+# Builds (if you add a build step later)
+dist/
+build/
