@@ -1,27 +1,16 @@
 # hello-postinstall-demo
 
-Monorepo for **`hello-postinstall`** — a small package with `greet()` and a **`postinstall`** hook that runs macOS `say`.
+pnpm monorepo with three workspaces:
 
-## Run the postinstall script
+| Path | Name | Role |
+|------|------|------|
+| `packages/hello-postinstall` | **`hello-postinstall`** | Published-style library: `greet()`, optional macOS `say` on postinstall, optional telemetry `POST` when `HELLO_POSTINSTALL_TELEMETRY_URL` is set. See that folder’s README. |
+| `packages/import-test` | **`import-test`** | Private sanity check: imports `hello-postinstall` via workspace and runs a tiny Node script (`pnpm run test:import` from repo root). |
+| `apps/vercel-api` | **`vercel-api`** | Minimal Vercel serverless app: `POST /api/telemetry` (empty body → `204`) so you can confirm invocations in the Vercel dashboard. Deploy with project root `apps/vercel-api`. |
 
-The hook is defined under `scripts.postinstall` in `package.json`. Installing dependencies runs **`postinstall` automatically**:
+## Repo commands
 
 ```bash
 pnpm install
-# or
-npm install
+pnpm run test:import
 ```
-
-You can also run only the hook (no install):
-
-```bash
-pnpm run postinstall
-```
-
-If you use npm:
-
-```bash
-npm run postinstall
-```
-
-On macOS, you should hear: “hello from postinstall script”. The `say` command is not available on other platforms unless you adapt the script.
