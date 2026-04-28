@@ -55,6 +55,6 @@ jobs:
           publish: pnpm run release
           commit: "chore: release"
           title: "chore: release"
+          github-token: ${{ secrets.CHANGESETS_GITHUB_TOKEN }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
