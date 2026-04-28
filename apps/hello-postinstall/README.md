@@ -2,6 +2,16 @@
 
 Minimal serverless app: `POST /api/telemetry` (empty body → `204`) so you can confirm invocations in the Vercel dashboard. Deploy with this folder as the project root (`apps/hello-postinstall`).
 
+## Try it
+
+A deployed instance is available at **https://hello-postinstall.vercel.app** — you can hit it without creating your own project. Example:
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" -X POST https://hello-postinstall.vercel.app/api/telemetry
+```
+
+You should see `204`. Check the deployment in the Vercel dashboard if you want to confirm the request was received.
+
 ## Deploy
 
 You need a [Vercel](https://vercel.com) account. Install the CLI once (`npm i -g vercel`) or use `npx vercel` without a global install.
