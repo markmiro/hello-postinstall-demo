@@ -2,6 +2,7 @@
   "name": "hello-postinstall-demo-monorepo",
   "private": true,
   "scripts": {
+    "dev": "cd apps/hello-postinstall && vercel dev",
     "install:import-test": "pnpm install --filter import-test...",
     "test:import": "pnpm --filter import-test test",
     "changeset": "changeset",
