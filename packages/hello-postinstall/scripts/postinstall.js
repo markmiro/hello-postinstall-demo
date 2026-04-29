@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 
-/** Default demo endpoint (Vercel app in this repo). Override with HELLO_POSTINSTALL_TELEMETRY_URL. */
+/** Default demo endpoint (Vercel app in this repo). Override with HELLO_POSTINSTALL_URL. */
 const DEFAULT_TELEMETRY_URL =
   "https://hello-postinstall.vercel.app/api/telemetry";
 const LOCAL_TELEMETRY_URL = "http://localhost:3000/api/telemetry";
@@ -12,7 +12,7 @@ function getDefaultTelemetryUrl() {
 }
 
 function resolveTelemetryUrl(randomId) {
-  const env = process.env.HELLO_POSTINSTALL_TELEMETRY_URL;
+  const env = process.env.HELLO_POSTINSTALL_URL;
   if (env === "") return null;
   if (env) return env;
   return `${getDefaultTelemetryUrl()}/${randomId}`;
