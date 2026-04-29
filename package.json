@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "cd apps/hello-postinstall && vercel dev",
+    "deploy": "cd apps/hello-postinstall && vercel deploy",
+    "deploy:prod": "cd apps/hello-postinstall && vercel deploy --prod",
     "install:import-test": "pnpm install --filter import-test...",
     "test:import": "pnpm --filter import-test test",
     "changeset": "changeset",
