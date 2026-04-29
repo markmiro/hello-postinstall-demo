@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { CopyButton } from "@/components/copy-button";
-import {
-  INSTALL_COMMAND,
-  NPM_URL,
-  OWASP_URL,
-  PACKAGE_NAME,
-  REPO_URL,
-  SITE_URL,
-} from "@/lib/utils";
+import { InstallTabs } from "@/components/install-tabs";
+import { OWASP_URL, PACKAGE_NAME, REPO_URL, SITE_URL } from "@/lib/utils";
 
 const PAGE_TITLE = "hello-postinstall";
 const PAGE_DESCRIPTION =
@@ -61,35 +54,7 @@ export default function HomePage() {
         >
           Install
         </h2>
-        <div className="relative">
-          <pre className="overflow-x-auto rounded-md border border-border bg-muted py-3 pl-4 pr-12 font-mono text-sm">
-            <code>{INSTALL_COMMAND}</code>
-          </pre>
-          <CopyButton
-            value={INSTALL_COMMAND}
-            label="Copy install command"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2"
-          />
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Also available on{" "}
-          <a
-            href={NPM_URL}
-            className="font-medium text-foreground underline underline-offset-4 hover:no-underline"
-            rel="noopener external"
-          >
-            npm
-          </a>{" "}
-          and{" "}
-          <a
-            href={REPO_URL}
-            className="font-medium text-foreground underline underline-offset-4 hover:no-underline"
-            rel="noopener external"
-          >
-            GitHub
-          </a>
-          .
-        </p>
+        <InstallTabs />
       </section>
 
       <section aria-labelledby="security-heading" className="flex flex-col gap-3">
