@@ -1,20 +1,30 @@
 # hello-postinstall (Vercel app)
 
-Minimal serverless app: `POST /api/telemetry` (empty body → `204`) so you can confirm invocations in the Vercel dashboard. Deploy with this folder as the project root (`apps/hello-postinstall`).
+Next.js 15 (App Router) site for the [`hello-postinstall`](https://www.npmjs.com/package/hello-postinstall) npm package, plus the telemetry endpoint the package's `postinstall` hook POSTs to.
 
-## Try it
+- **Page** (`/`) — minimal, server-rendered, JS-free landing page (title, description, install command, OWASP link). SEO via metadata + JSON-LD + `sitemap.xml` + `robots.txt`.
+- **API** (`POST /api/telemetry`) — empty body → `204`; any other method → `405`. Same contract as before.
 
-A deployed instance is available at **https://hello-postinstall.vercel.app** — you can hit it without creating your own project. Example:
+Stack: Next.js 15, React 19, Tailwind CSS v4 (`@tailwindcss/postcss`), shadcn-style aliases (`@/components`, `@/lib`, `@/hooks`), neutral base color, Inter via `@fontsource-variable/inter`.
+
+## Local dev
+
+```bash
+pnpm install
+pnpm --filter hello-postinstall-vercel-app dev
+```
+
+## Try the API
 
 ```bash
 curl -sS -o /dev/null -w "%{http_code}\n" -X POST https://hello-postinstall.vercel.app/api/telemetry
 ```
 
-You should see `204`. Check the deployment in the Vercel dashboard if you want to confirm the request was received.
+Expect `204`.
 
-## Deploy
+## Deploy to Vercel
 
-You need a [Vercel](https://vercel.com) account. Install the CLI once (`npm i -g vercel`) or use `npx vercel` without a global install.
+You need a [Vercel](https://vercel.com) account.
 
 ### Vercel CLI
 
@@ -22,26 +32,17 @@ From the repository root:
 
 ```bash
 cd apps/hello-postinstall
-vercel
+vercel        # preview
+vercel --prod # production
 ```
 
-The first run links the folder to a Vercel project and deploys a **preview**. Follow the prompts (team, scope, project name). Deploy to production with:
-
-```bash
-vercel --prod
-```
-
-Later deploys from the same directory reuse the linked project (see `.vercel` locally, which is gitignored).
+The first run links the folder to a Vercel project (gitignored `.vercel`). Vercel auto-detects Next.js (also pinned in `vercel.json`).
 
 ### Git (dashboard)
 
-In the Vercel dashboard, **Add New… → Project** and import this Git repository. Set **Root Directory** to `apps/hello-postinstall` so Vercel uses this app and not the monorepo root. Vercel will deploy on pushes according to your Git integration settings.
+In the Vercel dashboard, **Add New… → Project** and import this Git repository. Set **Root Directory** to `apps/hello-postinstall`.
 
-## How Vercel picks the project name
+## Notes
 
-Nothing in `vercel.json` here sets the project name, and the `name` field in `package.json` is not what the Vercel CLI uses as its default suggestion.
-
-- **Vercel CLI** (`vercel` / `vercel deploy`) from this directory: on first link, the CLI typically **suggests the current folder name** as the project name — here, **`hello-postinstall`**, if you accept the default.
-- **Import from Git** in the Vercel dashboard: the new project is usually named after the **Git repository** (for this monorepo, commonly **`hello-postinstall-demo`** unless you rename it during setup).
-
-You can always change the project name later in the Vercel project settings.
+- The page works with JavaScript disabled. Next.js still ships a small client runtime by default; nothing on the page depends on it.
+- `app/api/telemetry/route.ts` replaces the previous `api/telemetry.js` serverless function. The contract is unchanged.
