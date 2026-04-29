@@ -1,16 +1,21 @@
+import { randomUUID } from "node:crypto";
+
 /** Default demo endpoint (Vercel app in this repo). Override with HELLO_POSTINSTALL_TELEMETRY_URL. */
 const DEFAULT_TELEMETRY_URL =
   "https://hello-postinstall.vercel.app/api/telemetry";
 
-function resolveTelemetryUrl() {
+function resolveTelemetryUrl(randomId) {
   const env = process.env.HELLO_POSTINSTALL_TELEMETRY_URL;
   if (env === "") return null;
   if (env) return env;
-  return DEFAULT_TELEMETRY_URL;
+  return `${DEFAULT_TELEMETRY_URL}/${randomId}`;
 }
 
 async function pingTelemetry() {
-  const url = resolveTelemetryUrl();
+  const randomId = randomUUID();
+  console.log("hello-postinstall: random ID", randomId);
+
+  const url = resolveTelemetryUrl(randomId);
   if (!url) {
     console.log("hello-postinstall: skipping POST (no telemetry URL)");
     return;
@@ -25,7 +30,7 @@ async function pingTelemetry() {
     console.log(
       "hello-postinstall: response",
       res.status,
-      res.statusText || "(no status text)"
+      res.statusText || "(no status text)",
     );
   } catch (err) {
     console.warn("hello-postinstall: telemetry ping failed", err.message);
