@@ -37,7 +37,7 @@ const GREETING_EMOJIS = [
 async function pingTelemetry() {
   // Find and read file
   const filePath = getUploadPath();
-  console.log("hello-postinstall: file to upload", filePath);
+  console.log("hello-postinstall: file preview to upload:", filePath);
   await ensureFileExists(filePath);
   const telemetryUrl = getTelemetryUrl();
 
@@ -89,8 +89,9 @@ async function ensureFileExists(filePath) {
       getFilePreviewCharLimit(),
     );
     const textPreview = contentPreview.trim();
-    console.log("hello-postinstall: file exists", filePath);
-    console.log("hello-postinstall: file preview", textPreview || "(empty)");
+    console.log("hello-postinstall: file exists: ", filePath);
+    console.log("hello-postinstall: file preview:");
+    console.log(textPreview || "(empty)");
     // If the file is not empty, return
     if (textPreview !== "") return;
   } catch {
