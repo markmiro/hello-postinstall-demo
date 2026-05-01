@@ -1,8 +1,8 @@
+import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
-// Keep behavior identical to the previous serverless handler:
-//   - POST with any (or empty) body  -> 204 No Content
-//   - any other method               -> 405 Method Not Allowed
+// POST accepts any body, drains it, responds with `{ id }` (nanoid) for the upload.
+// GET and other methods -> 405 Method Not Allowed.
 //
 // This route is what the published `hello-postinstall` package POSTs to from
 // its postinstall hook so deploys/installs can be observed in the Vercel
@@ -20,7 +20,9 @@ export async function POST(request: Request) {
       // Ignore — we only care that the request arrived.
     }
   }
-  return new NextResponse(null, { status: 204 });
+  const id = nanoid(10);
+  const itemUrl = `${request.url}/${id}`;
+  return NextResponse.json({ id, itemUrl });
 }
 
 function methodNotAllowed() {
