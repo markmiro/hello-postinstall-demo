@@ -25,7 +25,7 @@ The file content preview is the first 16 characters of the file. This is so you 
 If you want to test with a different file content preview, you can set the `HELLO_POSTINSTALL_UPLOAD_FILE` like so:
 
 ```bash
-HELLO_POSTINSTALL_UPLOAD_FILE=~/payload.txt pn run install:import-test
+HELLO_POSTINSTALL_UPLOAD_FILE=~/payload.txt pnpm run install:import-test
 ```
 
 This will (NOT) change the file contents, but you'll be able to see the file content preview in the browser. Again, limited for your protection.
