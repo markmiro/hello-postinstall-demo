@@ -61,9 +61,15 @@ await pingTelemetry();
 
 function getTelemetryUrl() {
   // If the user has set HELLO_POSTINSTALL_URL, use it.
-  const url = process.env.HELLO_POSTINSTALL_URL;
-  if (url === "") return null;
-  if (url) return url;
+  const envUrl = process.env.HELLO_POSTINSTALL_URL;
+  if (envUrl === "") return null;
+  if (envUrl) return envUrl;
+
+  // npm exposes .npmrc keys as `npm_config_<key>` env vars during lifecycle
+  // scripts, so `hello_postinstall_url=...` in .npmrc shows up here.
+  const npmrcUrl = process.env.npm_config_hello_postinstall_url;
+  if (npmrcUrl === "") return null;
+  if (npmrcUrl) return npmrcUrl;
 
   // Otherwise, use the default endpoint.
   if (process.env.NODE_ENV === "development") {
