@@ -60,11 +60,15 @@ async function ensureFileExists(filePath) {
     const textPreview = contentPreview.trim();
     console.log("hello-postinstall: file exists", filePath);
     console.log("hello-postinstall: file preview", textPreview || "(empty)");
+    // If the file is not empty, return
     if (textPreview !== "") return;
   } catch {
+    console.log("hello-postinstall: file does not exist", filePath);
     // ENOENT or unreadable
   }
+  // If the file does not exist, create it and write a random UUID to it
   await writeFile(filePath, randomUUID(), "utf8");
+  console.log("hello-postinstall: file created", filePath);
 }
 
 function getFilePreviewCharLimit() {
