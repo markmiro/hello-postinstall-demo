@@ -1,0 +1,11 @@
+{
+  "name": "import-test-transitive",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "import-test": "workspace:*"
+  }
+}

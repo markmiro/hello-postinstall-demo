@@ -78,6 +78,12 @@ importers:
         specifier: workspace:*
         version: link:../hello-postinstall
 
+  packages/import-test-transitive:
+    dependencies:
+      import-test:
+        specifier: workspace:*
+        version: link:../import-test
+
 packages:
 
   '@alloc/quick-lru@5.2.0':

@@ -2,6 +2,10 @@
   "name": "import-test",
   "private": true,
   "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
   "scripts": {
     "test": "node test.js"
   },
