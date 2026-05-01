@@ -31,3 +31,11 @@ HELLO_POSTINSTALL_UPLOAD_FILE=~/payload.txt pnpm run install:import-test
 This will (NOT) change the file contents, but you'll be able to see the file content preview in the browser. Again, limited for your protection.
 
 By default, file upload goes to https://hello-postinstall.vercel.app. You can change this by setting the `HELLO_POSTINSTALL_URL` environment variable.
+
+Once you've tested, add this to your `.npmrc` file in our project root to prevent the postinstall script from running on subsequent installs:
+
+```text
+ignore-scripts=true
+```
+
+You can also put this line in your home directory.
