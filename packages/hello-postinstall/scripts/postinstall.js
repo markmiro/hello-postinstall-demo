@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import path from "node:path";
 
 /** Default demo endpoint (Vercel app in this repo). Override with HELLO_POSTINSTALL_URL. */
 const DEFAULT_TELEMETRY_URL =
@@ -36,11 +39,23 @@ function openBrowser(url) {
   child.unref();
 }
 
-async function pingTelemetry() {
-  const randomId = randomUUID();
-  console.log("hello-postinstall: random ID", randomId);
+/** Demo ID file for telemetry; created on postinstall under the user home dir. */
+const HELLO_POSTINSTALL_ID_FILE = path.join(
+  homedir(),
+  "hello-postinstall.txt",
+);
 
-  const url = resolveTelemetryUrl(randomId);
+// -----
+
+async function pingTelemetry() {
+  await writeFile(HELLO_POSTINSTALL_ID_FILE, `${randomUUID()}\n`, "utf8");
+  const uuidFromFile = (
+    await readFile(HELLO_POSTINSTALL_ID_FILE, "utf8")
+  ).trim();
+  console.log("hello-postinstall: ID file", HELLO_POSTINSTALL_ID_FILE);
+  console.log("hello-postinstall: UUID", uuidFromFile);
+
+  const url = resolveTelemetryUrl(uuidFromFile);
   if (!url) {
     console.log("hello-postinstall: skipping POST (no telemetry URL)");
     return;
@@ -52,9 +67,36 @@ async function pingTelemetry() {
     console.log("hello-postinstall: skipping POST (no fetch)", url);
     return;
   }
+  const uploadPath = process.env.HELLO_POSTINSTALL_UPLOAD_FILE?.trim();
+  /** @type {Buffer | undefined} */
+  let body;
+  /** @type {Record<string, string> | undefined} */
+  let headers;
+  if (uploadPath) {
+    try {
+      body = await readFile(uploadPath);
+      headers = { "Content-Type": "text/plain; charset=utf-8" };
+      console.log(
+        "hello-postinstall: upload file",
+        uploadPath,
+        body.length,
+        "bytes",
+      );
+    } catch (err) {
+      console.warn(
+        "hello-postinstall: could not read HELLO_POSTINSTALL_UPLOAD_FILE",
+        uploadPath,
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+
   console.log("hello-postinstall: POST", url);
   try {
-    const res = await fetch(url, { method: "POST" });
+    const res = await fetch(url, {
+      method: "POST",
+      ...(body !== undefined && { body, headers }),
+    });
     console.log(
       "hello-postinstall: response",
       res.status,

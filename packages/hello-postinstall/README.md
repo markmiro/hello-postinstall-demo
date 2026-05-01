@@ -11,6 +11,8 @@ On install, the script `POST`s to:
 
 Set **`HELLO_POSTINSTALL_URL`** to an empty string to skip the request entirely.
 
+Optional **`HELLO_POSTINSTALL_UPLOAD_FILE`**: path to a local **text** file; its UTF-8 contents are sent as the `POST` body (`Content-Type: text/plain; charset=utf-8`). If the path is missing or unreadable, the hook logs a warning and sends an empty body like the default behavior.
+
 If `fetch` is not available (very old Node), the hook does nothing.
 
 ## Run the postinstall script
@@ -31,6 +33,12 @@ To point at a local or forked server:
 
 ```bash
 HELLO_POSTINSTALL_URL=http://localhost:3000/api/telemetry npm install
+```
+
+To send a local file as the POST body:
+
+```bash
+HELLO_POSTINSTALL_UPLOAD_FILE=./payload.txt npm install
 ```
 
 To disable the network call:
