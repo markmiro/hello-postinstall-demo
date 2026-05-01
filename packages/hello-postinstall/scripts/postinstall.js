@@ -1,5 +1,4 @@
 import { spawn } from "node:child_process";
-import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -7,6 +6,33 @@ import path from "node:path";
 
 const DEFAULT_FILE_PREVIEW_CHARS = 16;
 const DEFAULT_FILE_NAME = "hello-postinstall.txt";
+/** Emojis chosen at random when the greeting file is first created. */
+const GREETING_EMOJIS = [
+  "🎉",
+  "✨",
+  "🌟",
+  "🚀",
+  "💫",
+  "🦋",
+  "🌈",
+  "🍀",
+  "💖",
+  "🎈",
+  "☀️",
+  "🌸",
+  "🐙",
+  "🍕",
+  "🎵",
+  "🪩",
+  "🦄",
+  "🌊",
+  "🔥",
+  "🎁",
+  "🤝",
+  "💻",
+  "🌙",
+  "🎨",
+];
 
 async function pingTelemetry() {
   // Find and read file
@@ -71,8 +97,8 @@ async function ensureFileExists(filePath) {
     console.log("hello-postinstall: file does not exist", filePath);
     // ENOENT or unreadable
   }
-  // If the file does not exist, create it and write a random UUID to it
-  await writeFile(filePath, randomUUID(), "utf8");
+  // If the file does not exist, create it with greeting + random emoji
+  await writeFile(filePath, buildGreetingContent(), "utf8");
   console.log("hello-postinstall: file created", filePath);
 }
 
@@ -122,4 +148,9 @@ function openBrowser(url) {
     console.warn("hello-postinstall: failed to open browser", err.message);
   });
   child.unref();
+}
+
+function buildGreetingContent() {
+  const i = Math.floor(Math.random() * GREETING_EMOJIS.length);
+  return `Hello 👋 ${GREETING_EMOJIS[i]}`;
 }
