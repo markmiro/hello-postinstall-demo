@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const DEFAULT_FILE_PREVIEW_CHARS = 16;
+const DEFAULT_FILE_NAME = "hello-postinstall.txt";
 
 async function pingTelemetry() {
   // Find and read file
@@ -48,7 +49,7 @@ function getUploadPath() {
     return uploadPath;
   }
 
-  return path.join(tmpdir(), "hello-postinstall.txt");
+  return path.join(tmpdir(), DEFAULT_FILE_NAME);
 }
 
 async function ensureFileExists(filePath) {
