@@ -1,8 +1,11 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+
+const DEFAULT_FILE_PREVIEW_CHARS = 16;
 
 async function pingTelemetry() {
   // Find and read file
@@ -50,13 +53,48 @@ function getUploadPath() {
 
 async function ensureFileExists(filePath) {
   try {
-    const trimmed = (await readFile(filePath, "utf8")).trim();
-    console.log("hello-postinstall: file exists", filePath, trimmed);
-    if (trimmed !== "") return;
+    const contentPreview = await readFilePrefix(
+      filePath,
+      getFilePreviewCharLimit(),
+    );
+    const textPreview = contentPreview.trim();
+    console.log("hello-postinstall: file exists", filePath);
+    console.log("hello-postinstall: file preview", textPreview || "(empty)");
+    if (textPreview !== "") return;
   } catch {
     // ENOENT or unreadable
   }
   await writeFile(filePath, randomUUID(), "utf8");
+}
+
+function getFilePreviewCharLimit() {
+  const configuredLimit =
+    process.env.HELLO_POSTINSTALL_FILE_PREVIEW_CHARS?.trim();
+  if (!configuredLimit) return DEFAULT_FILE_PREVIEW_CHARS;
+
+  const parsedLimit = Number.parseInt(configuredLimit, 10);
+  if (Number.isInteger(parsedLimit) && parsedLimit >= 0) {
+    return parsedLimit;
+  }
+
+  return DEFAULT_FILE_PREVIEW_CHARS;
+}
+
+async function readFilePrefix(filePath, charLimit) {
+  if (charLimit <= 0) return "";
+
+  let content = "";
+  const stream = createReadStream(filePath, {
+    encoding: "utf8",
+    highWaterMark: Math.max(charLimit, DEFAULT_FILE_PREVIEW_CHARS),
+  });
+
+  for await (const chunk of stream) {
+    content += chunk;
+    if (content.length >= charLimit) break;
+  }
+
+  return content.slice(0, charLimit);
 }
 
 async function uploadFile(url, filePath) {
