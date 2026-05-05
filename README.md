@@ -13,7 +13,7 @@ pnpm monorepo with four workspaces:
 
 ```bash
 pnpm install
-pnpm run test:import
+pnpm run install:import-test
 ```
 
 The above will run a postinstall script that will:
@@ -27,11 +27,12 @@ If you want to test with a different file content preview, you can set the `HELL
 
 ```bash
 HELLO_POSTINSTALL_UPLOAD_FILE=~/payload.txt pnpm run install:import-test
+```
 
-To exercise the longer dependency chain (and run postinstall for `hello-postinstall` via `import-test`):
+To exercise the longer dependency chain:
 
 ```bash
-HELLO_POSTINSTALL_UPLOAD_FILE=~/payload.txt pnpm run install:import-test-transitive
+pnpm run install:import-test-transitive
 ```
 
 If you really want to scare yourself, you can set the `HELLO_POSTINSTALL_UPLOAD_FILE` to your `.zshrc` file.
@@ -42,12 +43,51 @@ By default, file upload goes to https://hello-postinstall.vercel.app. You can ch
 
 See [`packages/import-test-transitive/.npmrc`](packages/import-test-transitive/.npmrc) for an example.
 
-## How to unexpected postinstalls
+## How to prevent unexpected postinstalls
 
-Once you've tested, add this to your `.npmrc` file in our project root to prevent the postinstall script from running on subsequent installs:
+Postinstall (and other lifecycle) scripts are a well-known supply-chain attack surface. The [OWASP NPM Security Cheat Sheet §3](https://cheatsheetseries.owasp.org/cheatsheets/NPM_Security_Cheat_Sheet.html#3-minimize-attack-surfaces-by-ignoring-run-scripts) recommends disabling them by default and only opting specific packages in.
+
+### 1. Disable all lifecycle scripts
+
+Once you've tested, add this to your `.npmrc` file in your project root to prevent postinstall (and other lifecycle) scripts from running on subsequent installs:
 
 ```text
 ignore-scripts=true
 ```
 
-You can also put this line in your home directory.
+You can also put this line in your home directory (`~/.npmrc`) to make it the default for every project on your machine.
+
+With `ignore-scripts=true` enabled, re-running `pnpm install` in this repo will skip `hello-postinstall`'s postinstall script entirely — no temp file, no telemetry POST, no browser open.
+
+### 2. Allowlist trusted lifecycle scripts with `@lavamoat/allow-scripts`
+
+Disabling lifecycle scripts globally is the safest default, but some packages (e.g. native modules like `sharp` or `node-gyp`-based builds) legitimately need them. [`@lavamoat/allow-scripts`](https://github.com/LavaMoat/LavaMoat/tree/main/packages/allow-scripts) lets you keep `ignore-scripts=true` on and explicitly opt specific packages in.
+
+Install it as a dev dependency and wire it into your own `postinstall`:
+
+```bash
+pnpm add -D @lavamoat/allow-scripts
+```
+
+```json
+{
+  "scripts": {
+    "postinstall": "allow-scripts"
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "sharp": true,
+      "hello-postinstall": false
+    }
+  }
+}
+```
+
+Then run:
+
+```bash
+pnpm allow-scripts auto   # populate the allowlist from currently installed deps (defaults everything to false)
+pnpm install
+```
+
+Only packages explicitly set to `true` in `lavamoat.allowScripts` will be allowed to run their lifecycle scripts. Anything new that shows up in your dependency graph will fail the install until you review it and decide whether to allow it — giving you a human-in-the-loop checkpoint for supply-chain risk.
